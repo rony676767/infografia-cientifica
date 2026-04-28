@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control ********* en la Producción ** ****** Arcoíris</title><!-- Fuentes: Montserrat y Open Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet"><!-- ESTILOS CSS (Podrías mover esto a style.css) -->
+    <style>
+        /* VARIABLES DE COLOR Y TEMA */
+        :root {
+            --color-main: #005F73;
+            /* Color Principal */
+            --color-secondary: #0A9396;
+            /* Color Secundario */
+            --color-accent: #94D2BD;
+            /* Color de Acento */
+            --color-dark: #001219;
+            --color-light: #e0fbfc;
+            --color-white: #ffffff;
+            --shadow-sm: 0 4px 6px rgba(0, 18, 25, 0.05);
+            --shadow-md: 0 10px 15px rgba(0, 18, 25, 0.1);
+            --shadow-lg: 0 20px 25px rgba(0, 18, 25, 0.15);
+            --radius: 12px;
+            --font-title: 'Montserrat', sans-serif;
+            --font-body: 'Open Sans', sans-serif;
+        }
+
+        /* RESET & BASE */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: #f8f9fa;
+            color: var(--color-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* HEADER */
+        header {
+            background: linear-gradient(135deg, var(--color-main), var(--color-secondary));
+            color: var(--color-white);
+            text-align: center;
+            padding: 3rem 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        header h1 {
+            font-family: var(--font-title);
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            font-size: 1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* CONTENEDOR PRINCIPAL */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem 3rem 1.5rem;
+        }
+
+        /* GRID DE TARJETAS */
+        .infographic-grid {
+            display: grid;
+            gap: 2rem;
+            /* Mobile First: 1 columna */
+            grid-template-columns: 1fr;
+        }
+
+        /* Tablet: 2 columnas */
+        @media (min-width: 600px) {
+            .infographic-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Desktop: 3 o 4 columnas */
+        @media (min-width: 1024px) {
+            .infographic-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1400px) {
+            .infographic-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* DISEÑO DE LA TARJETA */
+        .card {
+            background: var(--color-white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid transparent;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Estado Hover (Hover suave para escritorio) */
+        @media (hover: hover) {
+            .card:hover {
+                transform: translateY(-5px) scale(1.02);
+                box-shadow: var(--shadow-md);
+                border-color: var(--color-accent);
+            }
+        }
+
+        /* Estado Activo (Click/Expandido) */
+        .card.active {
+            background-color: #f0fbfb;
+            border: 1px solid var(--color-secondary);
+            box-shadow: var(--shadow-lg);
+            transform: scale(1.03);
+            z-index: 10;
+        }
+
+        /* Contenido de la tarjeta */
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+            background: rgba(10, 147, 150, 0.1);
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+
+        .card.active .card-icon {
+            background: var(--color-secondary);
+            color: white;
+        }
+
+        .card h3 {
+            font-family: var(--font-title);
+            font-size: 1.1rem;
+            color: var(--color-main);
+            font-weight: 700;
+        }
+
+        .card-description {
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 1rem;
+        }
+
+        /* CONTENIDO OCULTO */
+        .card-content {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out, opacity 0.4s ease-in-out;
+        }
+
+        .card.active .card-content {
+            max-height: 300px;
+            /* Altura suficiente para el contenido */
+            opacity: 1;
+            margin-top: 1rem;
+            border-top: 1px dashed var(--color-accent);
+            padding-top: 1rem;
+        }
+
+        /* Estadísticas y Textos */
+        .stat-highlight {
+            font-family: var(--font-title);
+            font-size: 1.5rem;
+            color: var(--color-secondary);
+            font-weight: bold;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-detail {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        /* GRÁFICOS SVG BARRAS */
+        .chart-container {
+            margin-top: 1rem;
+            width: 100%;
+            height: 60px;
+            /* Área para el gráfico */
+            display: flex;
+            align-items: flex-end;
+            gap: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .bar {
+            background-color: var(--color-accent);
+            width: 100%;
+            height: 0%;
+            /* Inicia en 0 */
+            border-radius: 2px 2px 0 0;
+            transition: height 1s ease-out, background-color 0.3s;
+            position: relative;
+        }
+
+        .bar:hover {
+            background-color: var(--color-secondary);
+        }
+
+        /* Animar barras solo cuando la tarjeta está activa */
+        .card.active .bar {
+            /* La altura se setea vía JS o style inline */
+        }
+
+        /* EtiquetaTooltip simple para barras */
+        .bar::after {
+            content: attr(data-value);
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: var(--color-main);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .card.active .bar:hover::after {
+            opacity: 1;
+        }
+
+        /* FOOTER */
+        footer {
+            background-color: var(--color-dark);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 3rem 1.5rem;
+            margin-top: 4rem;
+            text-align: center;
+            font-size: 0.8rem;
+            border-top: 4px solid var(--color-secondary);
+        }
+
+        footer h4 {
+            color: var(--color-white);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        .footer-designer {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--color-accent);
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body><!-- Header Principal -->
+    <header>
+        <h1>******* Sanitario ** Trucha Arco&iacute;ris</h1>
+        <p>Infograf&iacute;a *********** sobre enfermedades, ****** pr&aacute;cticas y seguridad alimentaria.</p>
+    </header><!-- Contenido Principal: Grid de Tarjetas -->
+    <main>
+        <section class="infographic-grid"><!-- Tarjeta 1: Población -->
+            <article class="card" tabindex="0">
+                <div class="card-header">
+                    <div class="card-icon">🐟</div>
+                    <h3>Densidad ** Poblaci&oacute;n</h3>
+                </div>
+                <p class="card-description">Densidad &oacute;ptima de ******* en ****** flotantes **** ****** estr&eacute;s.</p>
+                <div class="card-content"><span class="stat-highlight">15 - 20 kg/m&sup3;</span>
+                    <p class="stat-detail">Mantiene el ox&iacute;geno estable y reduce ** *********** por alimento.</p><!-- Mini Chart SVG/CSS -->
+                    <div class="chart-container">
+                        <div class="bar" style="height: 0%;" data-height="60%" data-value="15kg"><br></div>
+                        <div class="bar" style="height: 0%;" data-height="80%" data-value="20kg"><br></div>
+                        <div class="bar" style="height: 0%;" data-height="40%" data-value="Min"><br></div>
+                    </div>
+                </div>
+            </article><!-- Tarjeta 2: Temperatura -->
+            <article class="card" tabindex="0">
+                <div class="card-header">
+                    <div class="card-icon">🌡️</div>
+                    <h3>Temperatura Agua</h3>
+                </div>
+                <p class="card-description">Rango t&eacute;rmico ***** **** el *********** metab&oacute;lico de la trucha.</p>
+                <div class="card-content"><span class="stat-highlight">12&deg;C - 16&deg;C</span>
+                    <p class="stat-detail">*** ****** de 20&deg;C aumenta el riesgo de estr&eacute;s t&eacute;rmico y enfermedades.</p>
+                    <div class="chart-container">
+                        <div class="bar" style="height: 0%;" data-height="50%" data-value="12°"><br></div>
+                        <div class="bar" style="height: 0%;" data-height="80%" data-value="16°"><br></div>
+                        <div class="bar" style="height: 0%;" data-height="90%" data-value="Max"><br></div>
+                    </div>
+                </div>
+            </article><!-- Tarjeta 3: Crecimiento -->
+            <article class="card" tabindex="0">
+                <div class="card-header">
+                    <div class="card-icon">⚖️</div>
+                    <h3>**** Promedio</h3>
+                </div>
+                <p class="card-description">Evoluci&oacute;n del **** corporal durante el ciclo ** cultivo.</p>
+                <div class="card-content"><span class="stat-highlight">250 - 300 gr</span>
+                    <p class="stat-detail">Peso objetivo ** cosecha para mercado fresco.</p>
+                    <div class="chart-container">
+                        <div class="bar" style="height: 0%;" data-height="30%" data-value="Inicio"><br></div>
+                        <div class="bar" style="height: 0%;" data-height="60%" data-value="Medio"><br></div>
+                        <div class="bar" style="height: 0%;" data-height="100%" data-value="Final"><br></div>
+                    </div>
+                </div>
+            </article><!-- Tarjeta 4: Mortalidad -->
+            <article class="card" tabindex="0">
+                <div class="card-header">
+                    <div class="card-icon">💓</div>
+                    <h3>Tasa de Supervivencia</h3>
+                </div>
+                <p class="card-description">&Iacute;ndice ** supervivencia bajo buenas pr&aacute;cticas sanitarias.</p>
+                <div class="card-content"><span class="stat-highlight">&gt; 90%</span>
+                    <p class="stat-detail">Control de pat&oacute;genos y manejo adecuado de biometr&iacute;a.</p>
+                    <div class="chart-container">
+                        <div class="bar" style="background: #e9c46a; height: 0%;" data-height="10%" data-value="Mort"><br></div>
+                        <div class="bar" style="background: var(--color-secondary); height: 0%;" data-height="90%" data-value="Vivo"><br></div>
+                    </div>
+                </div>
+            </article><!-- Tarjeta 5: Alimentación -->
+            <article class="card" tabindex="0">
+                <div class="card-header">
+                    <div class="card-icon">🍽️</div>
+                    <h3>Conversi&oacute;n Alimenticia</h3>
+                </div>
+                <p class="card-description">Eficiencia en la transformaci&oacute;n ** alimento en biomasa.</p>
+                <div class="card-content"><span class="stat-highlight">FCA: 1.2 - 1.4</span>
+                    <p class="stat-detail">Factor de Conversi&oacute;n Alimenticia optimizado para reducir costos.</p>
+                    <div class="chart-container">
+                        <div class="bar" style="height: 0%;" data-height="70%" data-value="1.2"><br></div>
+                        <div class="bar" style="height: 0%;" data-height="90%" data-value="1.4"><br></div>
+                        <div class="bar" style="height: 0%;" data-height="100%" data-value="Max"><br></div>
+                    </div>
+                </div>
+            </article><!-- Tarjeta 6: Calidad Agua -->
+            <article class="card" tabindex="0">
+                <div class="card-header">
+                    <div class="card-icon">💧</div>
+                    <h3>Ox&iacute;**** Disuelto</h3>
+                </div>
+                <p class="card-description">Nivel cr&iacute;tico de ox&iacute;**** para respiraci&oacute;n &oacute;ptima.</p>
+                <div class="card-content"><span class="stat-highlight">&gt; 6 mg/L</span>
+                    <p class="stat-detail">Niveles inferiores a 5 mg/L ****** ******* y detienen el crecimiento.</p>
+                    <div class="chart-container">
+                        <div class="bar" style="height: 0%;" data-height="40%" data-value="Crítico"><br></div>
+                        <div class="bar" style="height: 0%;" data-height="90%" data-value="Óptimo"><br></div>
+                    </div>
+                </div>
+            </article><!-- Tarjeta 7: Reproducción -->
+            <article class="card" tabindex="0">
+                <div class="card-header">
+                    <div class="card-icon">🌱</div>
+                    <h3>Fecundidad</h3>
+                </div>
+                <p class="card-description">Cantidad ** huevos ********** *** ****** en ciclo reproductivo.</p>
+                <div class="card-content"><span class="stat-highlight">2*** - 3000</span>
+                    <p class="stat-detail">Huevos por kilogramo ** hembra. Alta ********** en agua fr&iacute;a.</p>
+                    <div class="chart-container">
+                        <div class="bar" style="height: 0%;" data-height="70%" data-value="2000"><br></div>
+                        <div class="bar" style="height: 0%;" data-height="100%" data-value="3000"><br></div>
+                    </div>
+                </div>
+            </article><!-- Tarjeta 8: Estadísticas Generales -->
+            <article class="card" tabindex="0">
+                <div class="card-header">
+                    <div class="card-icon">📊</div>
+                    <h3>Producci&oacute;n Nacional</h3>
+                </div>
+                <p class="card-description">******* de toneladas m&eacute;tricas anuales en ******** de jaulas.</p>
+                <div class="card-content"><span class="stat-highlight">~6,*** TM</span>
+                    <p class="stat-detail">Crecimiento ********* del sector acu&iacute;cola nacional (**** simulado).</p>
+                    <div class="chart-container">
+                        <div class="bar" style="height: 0%;" data-height="50%" data-value="2022"><br></div>
+                        <div class="bar" style="height: 0%;" data-height="75%" data-value="2023"><br></div>
+                        <div class="bar" style="height: 0%;" data-height="95%" data-value="2024"><br></div>
+                    </div>
+                </div>
+            </article><!-- Tarjeta 9: Tiempo -->
+            <article class="card" tabindex="0">
+                <div class="card-header">
+                    <div class="card-icon">⏱️</div>
+                    <h3>Duraci&oacute;n Ciclo</h3>
+                </div>
+                <p class="card-description">Tiempo estimado desde ova hasta tama&ntilde;o de cosecha.</p>
+                <div class="card-content"><span class="stat-highlight">8 - 10 Meses</span>
+                    <p class="stat-detail">Depende de la temperatura del agua y tasa ** alimentaci&oacute;n.</p>
+                    <div class="chart-container">
+                        <div class="bar" style="height: 0%;" data-height="80%" data-value="Rápido"><br></div>
+                        <div class="bar" style="height: 0%;" data-height="100%" data-value="Normal"><br></div>
+                    </div>
+                </div>
+            </article><!-- Tarjeta 10: Resultados -->
+            <article class="card" tabindex="0">
+                <div class="card-header">
+                    <div class="card-icon">🔬</div>
+                    <h3>Calidad Nutricional</h3>
+                </div>
+                <p class="card-description">****** proteico de la carne de ****** para ******* humano.</p>
+                <div class="card-content"><span class="stat-highlight">Alto en Prote&iacute;na</span>
+                    <p class="stat-detail">&Aacute;***** ****** Omega-3, esenciales **** ** salud cardiovascular.</p>
+                    <div class="chart-container">
+                        <div class="bar" style="background: #e76f51; height: 0%;" data-height="80%" data-value="Proteína"><br></div>
+                        <div class="bar" style="background: #2a9d8f; height: 0%;" data-height="40%" data-value="Grasa"><br></div>
+                    </div>
+                </div>
+            </article>
+        </section>
+    </main><!-- Footer Obligatorio -->
+    <footer>
+        <div class="footer-content">
+            <h4>Fuente</h4>
+            <p>Mendoza Bojorquez, R. J., &amp; Palomino Ramos, A. R. (2004). Manual ** ******* ** ****** arco iris ** jaulas flotantes. ***** ******** ** Desarrollo Pesquero (FONDEPES) &amp; Agencia Espa&ntilde;ola de Cooperaci&oacute;n Internacional (AECI).</p>
+            <div class="footer-designer">Dise&ntilde;ado por: Ronald Fabrizio Aguirre Paricahua</div>
+        </div>
+    </footer><!-- ARCHIVO JAVASCRIPT (Podrías mover esto a script.js) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. Selección de tarjetas
+            const cards = document.querySelectorAll('.card');
+        
+            /**
+             * Función para activar/desactivar tarjetas
+             * Revela estadísticas y anima gráficos
+             */
+            function toggleCard(selectedCard) {
+                const isActive = selectedCard.classList.contains('active');
+                const bars = selectedCard.querySelectorAll('.bar');
+        
+                // Cerrar todas las otras tarjetas (Para efecto "Focus") - Opcional
+                // Si quieres permitir múltiples abiertas, comenta este bloque forEach
+                cards.forEach(card => {
+                    if (card !== selectedCard) {
+                        card.classList.remove('active');
+                        // Resetear barras de otras tarjetas
+                        const otherBars = card.querySelectorAll('.bar');
+                        otherBars.forEach(bar => bar.style.height = '0%');
+                    }
+                });
+        
+                if (!isActive) {
+                    // Abrir tarjeta seleccionada
+                    selectedCard.classList.add('active');
+                    
+                    // Animar barras después de un pequeño delay para que la transición CSS funcione
+                    setTimeout(() => {
+                        bars.forEach(bar => {
+                            // Leemos la altura objetivo del atributo data-height
+                            const targetHeight = bar.getAttribute('data-height');
+                            bar.style.height = targetHeight;
+                        });
+                    }, 300); // 300ms coincide con la transición de apertura del contenedor
+        
+                } else {
+                    // Cerrar tarjeta seleccionada
+                    selectedCard.classList.remove('active');
+                    bars.forEach(bar => bar.style.height = '0%');
+                }
+            }
+        
+            // 2. Event Listeners para Click
+            cards.forEach(card => {
+                card.addEventListener('click', () => {
+                    toggleCard(card);
+                });
+        
+                // Accesibilidad: Permitir interacción con teclado (Enter/Espacio)
+                card.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleCard(card);
+                    }
+                });
+            });
+        
+            // ---------------------------------------------------------
+            // GESTIÓN DE DATOS EXTERNOS (PREPARACIÓN FUTURA)
+            // ---------------------------------------------------------
+            
+            /*
+            Para conectar con un archivo JSON o CSV externo en el futuro:
+        
+            async function loadData() {
+                try {
+                    // Ejemplo con fetch()
+                    const response = await fetch('data/trucha_data.json');
+                    const data = await response.json();
+        
+                    // Función para renderizar tarjetas dinámicamente
+                    renderCards(data); 
+                } catch (error) {
+                    console.error('Error cargando datos:', error);
+                }
+            }
+            */
+        
+            // Ejemplo de estructura de datos JSON esperada:
+            /*
+            const mockData = [
+                {
+                    "id": 1,
+                    "icon": "🐟",
+                    "title": "Densidad",
+                    "desc": "Descripción...",
+                    "stat": "15 kg/m³",
+                    "chartValues": [60, 80, 40]
+                },
+                // ... más objetos
+            ];
+            */
+        
+        });
+    </script>
+
+<div style="color: red">Prueba de Word a HTML - por favor <a href="https://wordtohtml.net/site/payment">Go PRO</a> para obtener el HTML completo.</div>
+</body>
+
+</html>
